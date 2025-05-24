@@ -1,7 +1,7 @@
 const Post = require('../models/Post')
 
-const getAllPosts = async () => {
-    return await Post.findAll()
+const getAllPosts = () => {
+    return Post.findAll()
 }
 
 const createPost = async (post) => {
@@ -10,17 +10,20 @@ const createPost = async (post) => {
 
 const deletePost = async (postId) => {
     const post = await Post.findByPk(postId)
+    if (!post) return null
     await post.destroy()
     return post
 }
 
 const updatePost = async (data, postId) => {
-    await Post.update(data, {where: {id: postId}})
-    return Post.findByPk(postId)
+    const post = await Post.findByPk(postId)
+    if (!post) return null
+    await post.update(data)
+    return post
 }
 
 const getOnePost = async (postId) => {
-    return await Post.findOne(postId)
+    return Post.findByPk(postId)
 }
 
 const getUserPost = async (userId) => {

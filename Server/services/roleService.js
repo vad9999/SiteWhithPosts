@@ -1,18 +1,19 @@
 const Role = require('../models/Role')
 
-const createRole = async(role) => {
-    return await Role.create(role)
-}
+const createRole = (role) => Role.create(role)
 
-const deleteRole = async(roleId) => {
+const deleteRole = async (roleId) => {
     const role = await Role.findByPk(roleId)
+    if (!role) return null
     await role.destroy()
     return role
 }
 
-const updateRole = async(data, roleId) => {
-    await Role.update(data, {where: {id: roleId}})
-    return Role.findByPk(roleId)
+const updateRole = async (data, roleId) => {
+    const role = await Role.findByPk(roleId)
+    if (!role) return null
+    await role.update(data)
+    return role
 }
 
 const getAllRoles = async() => {

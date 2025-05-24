@@ -1,27 +1,32 @@
 const Comment = require('../models/Comment')
 
-const createComment =  async (comment) => {
-    return await Comment.create(comment)
+const createComment = (comment) => {
+    return Comment.create(comment)
 }
 
-const getUserComment = async (userId) => {
-    return await Comment.findAll({where: {userId: userId}})
+const getUserComment = (userId) => {
+    return Comment.findAll({ where: { userId } })
 }
 
-const getPostComment = async (postId) => {
-    return await Comment.findAll({where: {postId: postId}})
+const getPostComment = (postId) => {
+    return Comment.findAll({ where: { postId } })
 }
 
 const deleteComment = async (commentId) => {
     const comment = await Comment.findByPk(commentId)
+    if (!comment) return null
     await comment.destroy()
     return comment
 }
 
+
 const updateComment = async (data, commentId) => {
-    await Comment.update(data, {where: {id: commentId}})
-    return Comment.findByPk(commentId)
+    const comment = await Comment.findByPk(commentId)
+    if (!comment) return null
+    await comment.update(data)
+    return comment
 }
+
 
 module.exports = {
     createComment,
