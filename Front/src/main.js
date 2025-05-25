@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import './style.css'
+// import 'naive-ui/dist/style.css'
 import App from './App.vue'
 import {createPinia} from 'pinia'
 import router from './router/script'
