@@ -1,4 +1,4 @@
-const User = require('../models/User')
+const {User} = require('../models')
 
 const getAllUsers = async () => {
     return await User.findAll()
@@ -25,10 +25,15 @@ const getOneUser = async (userId) => {
     return await User.findByPk(userId)
 }
 
+const getUserAuth = async (login, password) => {
+    return await User.findOne({ where: { login, password } })
+}
+
 module.exports = {
     getAllUsers,
     createUser,
     deleteUser,
     updateUser,
-    getOneUser
+    getOneUser,
+    getUserAuth
 }

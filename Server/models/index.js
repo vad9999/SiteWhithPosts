@@ -7,16 +7,16 @@ const sequelize = new Sequelize({
     logging: false
 })
 
+const Role = require('./Role')(sequelize)
 const User = require('./User')(sequelize)
 const Post = require('./Post')(sequelize)
-const Role = require('./Role')(sequelize)
 const Comment = require('./Comment')(sequelize)
 
 const db = {
     sequelize,
+    Role,
     User,
     Post,
-    Role,
     Comment
 }
 

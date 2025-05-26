@@ -60,11 +60,25 @@ const getUser = async (req, res) => {
     }
 }
 
+const getUserAuth = async (req, res) => {
+    try {
+        const { login, password } = req.body
+        const user = await userService.getUserAuth(login, password)
+        if (!user) {
+            return res.status(401).json({ message: 'Неверный логин или пароль' })
+        }
+        res.json(user)
+    } catch (err) {
+        console.warn('Ошибка в getUserAuth:', err)
+        res.status(500).json({ message: 'Ошибка сервера' })
+    }
+}
 
 module.exports = {
     getUser,
     getUsers,
     deleteUser,
     addUser,
-    updateUser
+    updateUser,
+    getUserAuth
 }

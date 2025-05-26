@@ -26,6 +26,12 @@
 </script>
 
 <style>
+	* {
+		padding: 0;
+		margin: 0;
+		box-sizing: border-box;
+	}
+
     body {
     background-color: white;
     color: rgb(57, 57, 57);

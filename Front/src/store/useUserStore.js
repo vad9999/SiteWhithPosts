@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import api from '../api'
+import api from '../api/api'
 import User from '../models/User'
 
 export const useUserStore = defineStore('user', {
@@ -16,13 +16,15 @@ export const useUserStore = defineStore('user', {
             const res = await api.get(`/users/:${userId}`)
             this.user = res.data
         },
-        async registerUser(userData) {
-            const res = await api.post('/users', userData)
-            this.user = res.data
-        },
         async addUser(userData) {
-            const res = await api.post('/users', userData)
-            this.users.push(User.fromJson(res.data))
+            try {
+                const res = await api.post('/users', userData)
+                this.user = res.data
+                return true
+            } catch (e) {
+                console.error('Ошибка регистрации:', e)
+                return false
+            }
         },
         async deleteUser(userId) {
             await api.delete(`/users/:${userId}`)
@@ -33,6 +35,16 @@ export const useUserStore = defineStore('user', {
             const updated = User.fromJson(response.data)
             const index = this.users.findIndex(u => u.id === userId)
             if (index !== -1) this.users[index] = updated
+        },
+        async fetchUserAuth(login, password) {
+            try {
+                const res = await api.post(`/users/auth`, {login, password})
+                this.user = res.data
+                return true
+            } catch (e) {
+                console.error('Ошибка авторизации:', e)
+                return false
+            }
         }
     }
 })

@@ -4,7 +4,6 @@ const bodyParser = require('body-parser')
 
 const db = require('./models')
 const applyAssociations = require('./models/associations')
-
 const port = process.env.PORT || 3000
 
 const app = express()
@@ -16,7 +15,7 @@ const apiRoutes = require('./routes')
 app.use('/api', apiRoutes)
 
 applyAssociations(db)
-
+//alter: true force: true
 db.sequelize.sync({alter: true})
     .then(() => {
         console.log('Таблицы синхронизированы')

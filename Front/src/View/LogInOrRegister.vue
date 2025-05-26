@@ -1,11 +1,9 @@
 <template>
     <div>
-        <div>
-        <n-button type="default" @click="themeStore.toggleTheme">
-            <component :is="themeStore.theme === 'dark' ? Moon : Sunny" 
-            style="width: 24px; height: 24px; color: currentColor;"/>
-        </n-button>
-    </div>
+      <div @click="themeStore.toggleTheme" style="width: 40px; height: 40px;">
+          <component :is="themeStore.theme === 'dark' ? Moon : Sunny" 
+          style="width: 40px; height: 40px; color: currentColor;"/>
+      </div>
 
   <n-card title="Вход в систему" style="max-width: 400px; margin: auto;" v-if="isLogIn">
     <n-form @submit.prevent="handleLogin" :model="formLogIn">
@@ -26,14 +24,10 @@
           </template>
         </n-input>
       </n-form-item>
-
-      <n-form-item>
+      <n-flex>
         <n-button type="primary" block @click="handleLogin">Войти</n-button>
-      </n-form-item>
-
-      <n-form-item>
         <n-button type="primary" block @click="isLogIn = false">Регистрация</n-button>
-      </n-form-item>
+      </n-flex>
     </n-form>
   </n-card>
 
@@ -65,13 +59,10 @@
         </n-input>
       </n-form-item>
 
-      <n-form-item>
+      <n-flex>
         <n-button type="primary" block @click="handleRegistration">Зарегистрироваться</n-button>
-      </n-form-item>
-
-      <n-form-item>
         <n-button type="primary" block @click="isLogIn = true">Назад</n-button>
-      </n-form-item>
+      </n-flex>
     </n-form>
     </n-card>
     </div>
@@ -80,11 +71,16 @@
 <script setup>
     import { ref } from 'vue'
     import { Eye, EyeOff } from '@vicons/tabler'
-    import { useMessage, NCard, NForm, NFormItem, NInput, NButton, NIcon } from 'naive-ui'
+    import { useMessage, NCard, NForm, NFormItem, NInput, NButton, NIcon, NFlex } from 'naive-ui'
     import { useThemeStore} from '../store/useThemeStore'
     import { Moon, Sunny } from '@vicons/ionicons5'
+    import { useUserStore } from '../store/useUserStore'
+    import { useRouter } from 'vue-router'
+    import User from '../models/User'
 
     const themeStore = useThemeStore()
+    const userStore = useUserStore()
+    const router = useRouter()
 
     const message = useMessage()
 
@@ -101,27 +97,45 @@
     })
 
     const showPassword = ref(false)
-    const isLogIn = ref(false)
+    const isLogIn = ref(true)
 
     const togglePasswordVisibility = () => {
         showPassword.value = !showPassword.value
     }
 
-    const handleLogin = () => {
-    if (!formLogIn.value.login || !formLogIn.value.password) {
-        message.error('Заполните логин и пароль')
-        return
-    }
-    // TODO: заменить на запрос к API
-    message.success(`Добро пожаловать, ${formLogIn.value.login}!`)
+    const handleLogin = async () => {
+        if (!formLogIn.value.login || !formLogIn.value.password) {
+            message.error('Заполните логин и пароль')
+            return
+        }
+        const success = await userStore.fetchUserAuth(formLogIn.value.login, formLogIn.value.password)
+        if(success) {
+            router.push('/home')
+            message.success(`Добро пожаловать, ${userStore.user.fullName}!`)
+        } else {
+            message.error('Не верный логин или пароль')
+        }
     }
 
-    const handleRegistration = () => {
-    if (!formRegister.value.login || !formRegister.value.password || !formRegister.value.fullName) {
-        message.error('Заполните логин, пароль и ник')
-        return
-    }
-    // TODO: заменить на запрос к API
-    message.success(`Добро пожаловать, ${formRegister.value.login}!`)
+    const handleRegistration = async () => {
+        if (!formRegister.value.login || !formRegister.value.password || !formRegister.value.fullName) {
+            message.error('Заполните логин, пароль и ник')
+            return
+        }
+        const user = new User({
+            fullName: formRegister.value.fullName,
+            email: formRegister.value.email,
+            login: formRegister.value.login,
+            password: formRegister.value.password,
+            roleId: 1,
+            registrationDate: Date.now()
+        })
+        const success = await userStore.addUser(user)
+        if(success) {
+
+        } else {
+            
+        }
+        message.success(`Добро пожаловать, ${formRegister.value.login}!`)
     }
 </script>
