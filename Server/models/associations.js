@@ -1,8 +1,8 @@
 module.exports = (db) => {
-    const {User, Post, Role, Comment} = db
+    const {User, Post, ThemePost, Comment} = db
 
-    Role.hasMany(User, { foreignKey: 'roleId'})
-    User.belongsTo(Role, {foreignKey: 'roleId', onDelete: 'CASCADE'})
+    ThemePost.hasOne(Post, { foreignKey: 'themePostId'})
+    Post.belongsTo(ThemePost, {foreignKey: 'themePostId', onDelete: 'CASCADE'})
 
     User.hasMany(Post, {foreignKey: 'userId'})
     Post.belongsTo(User, {foreignKey: 'userId', onDelete: 'CASCADE'})

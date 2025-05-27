@@ -33,8 +33,8 @@
 
   <n-card title="Регистрация" style="max-width: 400px; margin: auto;" v-else>
     <n-form @submit.prevent="handleRegistration" :model="formRegister">
-      <n-form-item label="Ник" path="fullName">
-        <n-input v-model:value="formRegister.fullName" placeholder="Введите ник" />
+      <n-form-item label="Ник" path="userName">
+        <n-input v-model:value="formRegister.userName" placeholder="Введите ник" />
       </n-form-item>
 
       <n-form-item label="Эл. почта" path="email">
@@ -92,7 +92,7 @@
     const formRegister = ref({
         login: '',
         password: '',
-        fullName: '',
+        userName: '',
         email: ''
     })
 
@@ -111,31 +111,29 @@
         const success = await userStore.fetchUserAuth(formLogIn.value.login, formLogIn.value.password)
         if(success) {
             router.push('/home')
-            message.success(`Добро пожаловать, ${userStore.user.fullName}!`)
+            message.success(`Добро пожаловать, ${userStore.user.userName}!`)
         } else {
             message.error('Не верный логин или пароль')
         }
     }
 
     const handleRegistration = async () => {
-        if (!formRegister.value.login || !formRegister.value.password || !formRegister.value.fullName) {
+        if (!formRegister.value.login || !formRegister.value.password || !formRegister.value.userName) {
             message.error('Заполните логин, пароль и ник')
             return
         }
         const user = new User({
-            fullName: formRegister.value.fullName,
+            userName: formRegister.value.userName,
             email: formRegister.value.email,
             login: formRegister.value.login,
             password: formRegister.value.password,
-            roleId: 1,
-            registrationDate: Date.now()
         })
         const success = await userStore.addUser(user)
         if(success) {
-
+			router.push('/home')
+			message.success(`Добро пожаловать, ${formRegister.value.userName}!`)
         } else {
-            
+            message.error('Ошибка регистрации')
         }
-        message.success(`Добро пожаловать, ${formRegister.value.login}!`)
     }
 </script>

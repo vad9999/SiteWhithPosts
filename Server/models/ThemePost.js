@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize')
 
 module.exports = (sequelize) => {
-    const Role = sequelize.define('Role', {
+    const ThemePost = sequelize.define('ThemePost', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -14,10 +14,10 @@ module.exports = (sequelize) => {
         }
     },
     {
-    tableName: 'role',
+    tableName: 'themePost',
     timestamps: true,
     paranoid: true
     })
 
-    return Role
+    return ThemePost
 }

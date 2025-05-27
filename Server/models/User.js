@@ -7,8 +7,8 @@ module.exports = (sequelize) => {
             primaryKey: true,
             autoIncrement: true,
         },
-        fullName: {
-            type: DataTypes.STRING(100),
+        userName: {
+            type: DataTypes.STRING(30),
             allowNull: false
         },
         email: {
@@ -23,15 +23,6 @@ module.exports = (sequelize) => {
         password: {
             type: DataTypes.STRING(20),
             allowNull: false
-        },
-        roleId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        registrationDate: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW
         }
     },
     {
