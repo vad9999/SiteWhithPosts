@@ -4,11 +4,11 @@ const router = express.Router()
 const userRoutes = require('./users')
 const postRoutes = require('./posts')
 const commentRoutes = require('./comments')
-//const roleRoutes = require('./roles')
+const themePostRoutes = require('./themePosts')
 
 router.use('/users', userRoutes)
 router.use('/posts', postRoutes)
 router.use('/comments', commentRoutes)
-//router.use('/roles', roleRoutes)
+router.use('/themePosts', themePostRoutes)
 
 module.exports = router

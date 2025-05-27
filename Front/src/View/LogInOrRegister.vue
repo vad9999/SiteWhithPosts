@@ -122,13 +122,16 @@
             message.error('Заполните логин, пароль и ник')
             return
         }
+
         const user = new User({
             userName: formRegister.value.userName,
             email: formRegister.value.email,
             login: formRegister.value.login,
             password: formRegister.value.password,
         })
+
         const success = await userStore.addUser(user)
+		
         if(success) {
 			router.push('/home')
 			message.success(`Добро пожаловать, ${formRegister.value.userName}!`)

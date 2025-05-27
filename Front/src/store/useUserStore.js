@@ -45,6 +45,10 @@ export const useUserStore = defineStore('user', {
                 console.error('Ошибка авторизации:', e)
                 return false
             }
+        },
+        logout() {
+            this.user = null
         }
-    }
+    },
+    persist: true   
 })
