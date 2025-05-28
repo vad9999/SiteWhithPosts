@@ -16,6 +16,16 @@ export const usePostStore = defineStore('post', {
                 console.error('Ошибка добавления:', e)
                 return false
             }
+        },
+        async fetchPosts(themePostId) {
+            try {
+                const res = await api.get('/posts', { params: {themePostId}})
+                this.posts = res.data.map(post => Post.fromJson(post))
+                return true
+            } catch (e) {
+                console.error('Ошибка получения:', e)
+                return false
+            }
         }
     }
 })

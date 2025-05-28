@@ -25,8 +25,34 @@
 
       <h2>Выбран пункт: {{ selectedKey }}</h2>
       <n-button type="primary" @click="loadThemePost" style="right: 0; top: 0;">Добавить</n-button>
-    </n-layout-content>
-  </n-layout>
+	  <n-card
+	  	v-for="post in postStore.posts"
+    	:title="post.title"
+    	size="medium"
+    	hoverable
+    	style="margin-bottom: 16px"
+  		>
+    	<template #header-extra>
+      		<n-text depth="3">{{ post.createdAt }}</n-text>
+    	</template>
+
+    <n-text depth="2">
+      {{ post.body.length > 100 ? post.body.slice(0, 100) + '...' : post.body }}
+    </n-text>
+
+    	<!-- <template #footer>
+      		<n-avatar
+        	size="small"
+        	round
+        	style="margin-right: 8px"
+      		>
+        		{{ authorName[0]?.toUpperCase() }}
+      		</n-avatar>
+      		<n-text>{{ authorName }}</n-text>
+    		</template> -->
+  			</n-card>
+		</n-layout-content>
+  	</n-layout>
 
     <n-modal v-model:show="showModal" title="Добавить пост" preset="dialog" :closable="false">
       <n-form :model="formData" :rules="rules" ref="formRef">
@@ -51,8 +77,8 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue'
-    import { NButton, NModal, NForm, NFormItem, NInput, NSelect, NFlex, useMessage, NLayout, NLayoutSider, NLayoutContent, NMenu } from 'naive-ui'
+    import { ref, onMounted, watch } from 'vue'
+    import { NButton, NModal, NAvatar, NText, NForm, NFormItem, NInput, NSelect, NFlex, useMessage, NLayout, NLayoutSider, NLayoutContent, NMenu, NCard } from 'naive-ui'
     import { useThemePostStore } from '../store/useThemePostStore'
     import { useUserStore } from '../store/useUserStore'
     import { usePostStore } from '../store/usePostStore'
@@ -64,15 +90,23 @@
     const postStore = usePostStore()
 
     const themeOptions = ref([])
+
+	const collapsed = ref(false)
+    const selectedKey = ref('0')
     
+    const SortedPosts = async () => {
+		console.log(selectedKey.value)
+		const success = await postStore.fetchPosts(Number(selectedKey.value))
+		if(success) {
+			message.success('Посты загружены')
+		}
+		else {
+			message.error('Ошибка постов')
+		}
+    }
 
-    const collapsed = ref(false)
-    const selectedKey = ref('1')
-
-    const menuOptions = ref([])
-
-    onMounted(async () => {
-        try {
+	const fetchThemePosts = async () => {
+		try {
             await themePostStore.fetchThemePosts()
             menuOptions.value = [{label: 'Все', key: 0}, ...themePostStore.themePosts.map(theme => ({
             label: theme.name,    
@@ -81,7 +115,20 @@
         } catch (e) {
             message.error('Не удалось загрузить темы', e)
         }
+	}
+
+    const menuOptions = ref([])
+
+    onMounted(async () => {
+        await fetchThemePosts()
+		await SortedPosts()
     })
+
+	watch(selectedKey, async () => {
+		await SortedPosts()
+	})
+
+	// watch(selectedKey, SortedPosts)
 
     const showModal = ref(false)
     const formData = ref({
@@ -134,34 +181,6 @@
     }
 </script>
 
-<style scoped>
-.layout {
-  display: flex;
-  height: 100vh; /* Высота равна высоте окна */
-  overflow: hidden;
-}
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh; /* Высота всей страницы */
-  z-index: 1000;
-  /* background: white; Чтобы не просвечивал контент */
-  box-shadow: 2px 0 6px rgb(0 0 0 / 0.1);
-}
-
-.content {
-  margin-left: 200px; /* Ширина сайдбара */
-  padding: 16px;
-  overflow-y: auto;
-  height: 100vh;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.sidebar.n-layout-sider--collapsed + .content {
-  margin-left: 48px; /* Ширина свернутого сайдбара */
-}  
+<style scoped> 
 
 </style>

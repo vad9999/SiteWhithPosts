@@ -2,7 +2,7 @@ const postService = require('../services/postService')
 
 const getPosts = async (req, res) => {
     try {
-        const posts = await postService.getAllPosts()
+        const posts = await postService.getAllPosts(req.query.themePostId)
         res.status(200).json(posts)
     } catch (e) {
         console.error('Ошибка получения постов:', e)

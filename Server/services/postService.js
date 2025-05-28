@@ -1,7 +1,26 @@
 const { Post } = require('../models')
 
-const getAllPosts = () => {
-    return Post.findAll()
+
+// const getAllPosts = (themePostId) => {
+//     console.log(themePostId)
+//     if(Number(themePostId) === 0 || themePostId === null || themePostId === undefined ) {
+//         console.log('все')
+//         return Post.findAll()
+//     }
+//     else {
+//         console.log('по темам')
+//         return Post.findAll({where: { themePostId }})
+//     }
+// }
+
+const getAllPosts = (themePostId) => {
+    const numericId = Number(themePostId)
+
+    if (!themePostId || numericId === 0) {
+        return Post.findAll()
+    } else {
+        return Post.findAll({ where: { themePostId: numericId } })
+    }
 }
 
 const createPost = async (post) => {
