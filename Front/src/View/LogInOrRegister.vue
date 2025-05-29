@@ -1,7 +1,7 @@
 <template>
     <div>
       <div @click="themeStore.toggleTheme" style="width: 40px; height: 40px;">
-          <component :is="themeStore.theme === 'dark' ? Moon : Sunny" 
+          <component :is="themeStore.theme === 'dark' ? Sunny : Moon" 
           style="width: 40px; height: 40px; color: currentColor;"/>
       </div>
 

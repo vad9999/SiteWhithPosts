@@ -22,6 +22,10 @@
       <!-- <n-button @click="collapsed = !collapsed" style="margin-bottom: 16px;">
         {{ collapsed ? 'Развернуть меню' : 'Свернуть меню' }}
       </n-button> -->
+	  	<div @click="themeStore.toggleTheme" style="width: 40px; height: 40px;">
+          	<component :is="themeStore.theme === 'dark' ? Sunny : Moon" 
+          	style="width: 40px; height: 40px; color: currentColor;"/>
+    	</div>
 
       <h2>Выбран пункт: {{ selectedKey }}</h2>
       <n-button type="primary" @click="loadThemePost" style="right: 0; top: 0;">Добавить</n-button>
@@ -39,17 +43,12 @@
     <n-text depth="2">
       {{ post.body.length > 100 ? post.body.slice(0, 100) + '...' : post.body }}
     </n-text>
-
-    	<!-- <template #footer>
-      		<n-avatar
-        	size="small"
-        	round
-        	style="margin-right: 8px"
-      		>
-        		{{ authorName[0]?.toUpperCase() }}
-      		</n-avatar>
-      		<n-text>{{ authorName }}</n-text>
-    		</template> -->
+		<template #footer>
+			<n-text>{{ post.username }}</n-text>
+		</template>
+    	<n-button type="primary" @click="toPost(post.id)">
+			Посмотреть
+		</n-button>
   			</n-card>
 		</n-layout-content>
   	</n-layout>
@@ -83,16 +82,30 @@
     import { useUserStore } from '../store/useUserStore'
     import { usePostStore } from '../store/usePostStore'
     import Post from '../models/Post'
+    import { Moon, Sunny } from '@vicons/ionicons5'
+	import { useThemeStore} from '../store/useThemeStore'
+	import { useRouter } from 'vue-router'
 
     const message = useMessage()
     const themePostStore = useThemePostStore()
     const userStore = useUserStore()
     const postStore = usePostStore()
+	const themeStore = useThemeStore()
+	const router = useRouter()
 
     const themeOptions = ref([])
 
 	const collapsed = ref(false)
     const selectedKey = ref('0')
+
+	const toPost = (postId) => {
+		if (!postId) {
+			console.error('postId is missing!')
+			return
+		}
+		router.push({ name: 'Post', params: { id: postId } })
+	}
+
     
     const SortedPosts = async () => {
 		console.log(selectedKey.value)
@@ -166,6 +179,7 @@
             })
 
             const success = await postStore.addPost(post)
+			await SortedPosts()
             if (success) {
                 showModal.value = false
                 formData.value.title = ''

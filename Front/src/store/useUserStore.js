@@ -12,9 +12,9 @@ export const useUserStore = defineStore('user', {
             const res = await api.get('/users')
             this.users = res.data.map(user => User.fromJson(user))
         },
-        async fetchUser(userId) {
-            const res = await api.get(`/users/:${userId}`)
-            this.user = res.data
+        async fetchUserById(userId) {
+            const res = await api.get(`/users/${userId}`)
+            return res.data
         },
         async addUser(userData) {
             try {
