@@ -3,6 +3,8 @@ import { createWebHistory} from 'vue-router'
 import LogInOrRegister from '../View/LogInOrRegister.vue'
 import Home from '../View/Home.vue'
 import Post from '../View/Post.vue'
+import UserPosts from '../View/UserPosts.vue'
+import UserSettings from '../View/UserSettings.vue'
 
 const routes = [
     {
@@ -16,9 +18,19 @@ const routes = [
         name: 'Home'
     },
     {
-        path: '/home/post/:id',
+        path: '/post/:id',
         component: Post,
         name: 'Post'
+    },
+    {
+        path: '/user/:id',
+        component: UserPosts,
+        name: 'UserPosts'
+    },
+    {
+        path: '/settings/user/:id',
+        component: UserSettings,
+        name: 'UserSettings'
     }
 ]
 

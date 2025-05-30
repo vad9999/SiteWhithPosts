@@ -27,14 +27,20 @@
           	style="width: 40px; height: 40px; color: currentColor;"/>
     	</div>
 
+      <div @click="toSettings" style="width: 40px; height: 40px;">
+		<component :is="Settings" style="width: 40px; height: 40px; color: currentColor;"/>
+      </div>
+
       <h2>Выбран пункт: {{ selectedKey }}</h2>
       <n-button type="primary" @click="loadThemePost" style="right: 0; top: 0;">Добавить</n-button>
+	  <n-button type="primary" @click="toUserPosts">Ваши посты</n-button>
 	  <n-card
 	  	v-for="post in postStore.posts"
     	:title="post.title"
     	size="medium"
     	hoverable
     	style="margin-bottom: 16px"
+		@click="toPost(post.id)"
   		>
     	<template #header-extra>
       		<n-text depth="3">{{ post.createdAt }}</n-text>
@@ -46,9 +52,6 @@
 		<template #footer>
 			<n-text>{{ post.username }}</n-text>
 		</template>
-    	<n-button type="primary" @click="toPost(post.id)">
-			Посмотреть
-		</n-button>
   			</n-card>
 		</n-layout-content>
   	</n-layout>
@@ -82,7 +85,7 @@
     import { useUserStore } from '../store/useUserStore'
     import { usePostStore } from '../store/usePostStore'
     import Post from '../models/Post'
-    import { Moon, Sunny } from '@vicons/ionicons5'
+    import { Moon, Sunny, Settings } from '@vicons/ionicons5'
 	import { useThemeStore} from '../store/useThemeStore'
 	import { useRouter } from 'vue-router'
 
@@ -106,7 +109,14 @@
 		router.push({ name: 'Post', params: { id: postId } })
 	}
 
-    
+    const toUserPosts = () => {
+		router.push(`/user/${userStore.user.id}`)
+	}
+
+	const toSettings = () => {
+		router.push(`/settings/user/${userStore.user.id}`)
+	}
+
     const SortedPosts = async () => {
 		console.log(selectedKey.value)
 		const success = await postStore.fetchPosts(Number(selectedKey.value))

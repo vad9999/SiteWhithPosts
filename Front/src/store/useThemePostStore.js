@@ -10,6 +10,10 @@ export const useThemePostStore = defineStore('themePost', {
         async fetchThemePosts() {
             const res = await api.get('/themePosts')
             this.themePosts = res.data.map(themePost => ThemePost.fromJson(themePost))
+        },
+        async fetchThemePostById(themePostId) {
+            const res = await api.get(`/themePosts/${themePostId}`)
+            return res.data
         }
     }
 })

@@ -20,9 +20,14 @@ const getAllThemePosts = async() => {
     return await ThemePost.findAll()
 }
 
+const getOneThemePost = async (themePostId) => {
+    return await ThemePost.findByPk(themePostId)
+}
+
 module.exports = {
     createThemePost,
     deleteThemePost,
     updateThemePost,
-    getAllThemePosts
+    getAllThemePosts,
+    getOneThemePost
 }

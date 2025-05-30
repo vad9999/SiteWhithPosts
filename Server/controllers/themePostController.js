@@ -46,9 +46,23 @@ const deleteThemePost = async (req, res) => {
     }
 }
 
+const getThemePost = async (req, res) => {
+    try {
+        const themePost = await themePostService.getOneThemePost(req.params.id)
+        if (!themePost) {
+            return res.status(404).json({ error: 'Тема не найдена' })
+        }
+        res.status(200).json(themePost)
+    } catch (e) {
+        console.log('Ошибка получения темы', e)
+        res.status(503).json({ error: 'Ошибка получения темы' })
+    }
+}
+
 module.exports = {
     getThemePosts,
     addThemePost,
     updateThemePost,
-    deleteThemePost
+    deleteThemePost,
+    getThemePost
 }

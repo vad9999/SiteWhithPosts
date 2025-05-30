@@ -15,8 +15,8 @@ const apiRoutes = require('./routes')
 app.use('/api', apiRoutes)
 
 applyAssociations(db)
-//alter: true force: true
-db.sequelize.sync({alter: true})
+//alter: true force: true {alter: true}
+db.sequelize.sync()
     .then(() => {
         console.log('Таблицы синхронизированы')
         app.listen(port, () => {
