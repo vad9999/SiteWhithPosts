@@ -52,6 +52,14 @@
 		<template #footer>
 			<n-text>{{ post.username }}</n-text>
 		</template>
+
+		<n-button @click.stop="like">
+			<component :is="Heart" style="width: 40px; height: 40px; color: currentColor;"/>
+		</n-button>
+
+		<n-button @click.stop="dislike">
+			<component :is="HeartDislike" style="width: 40px; height: 40px; color: currentColor;"/>
+		</n-button>
   			</n-card>
 		</n-layout-content>
   	</n-layout>
@@ -85,7 +93,7 @@
     import { useUserStore } from '../store/useUserStore'
     import { usePostStore } from '../store/usePostStore'
     import Post from '../models/Post'
-    import { Moon, Sunny, Settings } from '@vicons/ionicons5'
+    import { Moon, Sunny, Settings, ThumbsUp, ThumbsDown, Heart, HeartDislike } from '@vicons/ionicons5'
 	import { useThemeStore} from '../store/useThemeStore'
 	import { useRouter } from 'vue-router'
 
@@ -100,6 +108,14 @@
 
 	const collapsed = ref(false)
     const selectedKey = ref('0')
+
+	const like = async () => {
+
+	}
+
+	const dislike = async () => {
+
+	}
 
 	const toPost = (postId) => {
 		if (!postId) {

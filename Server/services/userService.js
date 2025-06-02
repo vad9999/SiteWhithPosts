@@ -22,7 +22,7 @@ const updateUser = async (data, userId) => {
 }
 
 const getOneUser = async (userId) => {
-    return await User.findByPk(userId)
+    return await User.findByPk(userId, { paranoid: false })
 }
 
 const getUserAuth = async (login, password) => {

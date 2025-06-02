@@ -22,7 +22,7 @@ const addUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {
-        const user = await userService.deleteUser(req.body.userId)
+        const user = await userService.deleteUser(req.params.id)
         if (!user) {
             return res.status(404).json({ error: 'Пользователь не найден' })
         }
@@ -33,19 +33,22 @@ const deleteUser = async (req, res) => {
     }
 }
 
+
 const updateUser = async (req, res) => {
     try {
-        const user = await userService.updateUser(req.body.data, req.body.userId)
+        const userId = req.params.id
+        const user = await userService.updateUser(req.body, userId)
+
         if (!user) {
             return res.status(404).json({ error: 'Пользователь не найден' })
         }
+
         res.status(200).json(user)
     } catch (e) {
         console.log('Ошибка обновления пользователя', e)
         res.status(503).json({ error: 'Ошибка обновления пользователя' })
     }
 }
-
 
 const getUser = async (req, res) => {
     try {

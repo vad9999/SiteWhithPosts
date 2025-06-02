@@ -16,9 +16,9 @@ export const useCommentStore = defineStore('comment', {
                 const res = await api.post('/comments', commentData)
                 return true
             } catch (e) {
-                console.error('Ошибка регистрации:', e)
+                console.error('Ошибка добавления:', e)
                 return false
             }
-        },
+        }
     }
 })

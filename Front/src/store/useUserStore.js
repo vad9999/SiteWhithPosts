@@ -27,14 +27,25 @@ export const useUserStore = defineStore('user', {
             }
         },
         async deleteUser(userId) {
-            await api.delete(`/users/:${userId}`)
-            this.users = this.users.filter(user => user.id !== userId)
+            try {
+                const res = await api.delete(`/users/${userId}`)
+                return true
+            } catch (e) {
+                console.error('Ошибка удаления аккаунта:', e)
+                return false
+            }
+            
         },
         async updateUser(userId, data) {
-            const response = await api.put(`/users/:${userId}`, data)
+            console.log(userId)
+            const response = await api.put(`/users/${userId}`, data)
             const updated = User.fromJson(response.data)
-            const index = this.users.findIndex(u => u.id === userId)
-            if (index !== -1) this.users[index] = updated
+            if(updated) {
+                this.user = updated
+                return true
+            } else {
+                return false
+            }
         },
         async fetchUserAuth(login, password) {
             try {
