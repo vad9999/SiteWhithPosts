@@ -15,11 +15,17 @@
       />
     </n-layout-sider>
 
-    <n-layout-content
-      style="margin-left: 200px; padding: 16px; overflow-y: auto; height: 100vh;"
-      :style="{ marginLeft: collapsed ? '48px' : '200px' }"
-    >
-      <!-- <n-button @click="collapsed = !collapsed" style="margin-bottom: 16px;">
+		<n-layout-content
+		:style="{
+			marginLeft: collapsed ? '48px' : '200px',
+			padding: '0',
+			height: '100vh',
+			overflow: 'hidden',
+			boxSizing: 'border-box'
+		}"
+		>
+		<div style="height: 100%; overflow-y: auto; padding: 16px; box-sizing: border-box;">
+			<!-- <n-button @click="collapsed = !collapsed" style="margin-bottom: 16px;">
         {{ collapsed ? 'Развернуть меню' : 'Свернуть меню' }}
       </n-button> -->
 	  	<div @click="themeStore.toggleTheme" style="width: 40px; height: 40px;">
@@ -43,9 +49,9 @@
 		@click="toPost(post.id)"
   		>
     	<template #header-extra>
-      		<n-text depth="3">{{ post.createdAt }}</n-text>
+      		<n-text depth="3">{{ dateStore.formatDate(post.createdAt) }}</n-text>
     	</template>
-
+<!--  -->
     <n-text depth="2">
       {{ post.body.length > 100 ? post.body.slice(0, 100) + '...' : post.body }}
     </n-text>
@@ -61,6 +67,7 @@
 			<component :is="HeartDislike" style="width: 40px; height: 40px; color: currentColor;"/>
 		</n-button>
   			</n-card>
+		</div>
 		</n-layout-content>
   	</n-layout>
 
@@ -96,12 +103,14 @@
     import { Moon, Sunny, Settings, ThumbsUp, ThumbsDown, Heart, HeartDislike } from '@vicons/ionicons5'
 	import { useThemeStore} from '../store/useThemeStore'
 	import { useRouter } from 'vue-router'
+	import { useDateStore } from '../store/useDateStore'
 
     const message = useMessage()
     const themePostStore = useThemePostStore()
     const userStore = useUserStore()
     const postStore = usePostStore()
 	const themeStore = useThemeStore()
+	const dateStore = useDateStore()
 	const router = useRouter()
 
     const themeOptions = ref([])

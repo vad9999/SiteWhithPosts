@@ -12,6 +12,7 @@
     "@vicons/ionicons5": "^0.13.0",
     "@vicons/tabler": "^0.13.0",
     "axios": "^1.9.0",
+    "dayjs": "^1.11.13",
     "naive-ui": "^2.41.0",
     "native-ui": "^0.0.1",
     "pinia": "^3.0.2",
