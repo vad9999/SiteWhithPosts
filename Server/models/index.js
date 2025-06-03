@@ -1,4 +1,4 @@
-const {Sequelize} = require('sequelize')
+const { Sequelize } = require('sequelize')
 const path = require('path')
 
 const sequelize = new Sequelize({
@@ -11,13 +11,15 @@ const ThemePost = require('./ThemePost')(sequelize)
 const User = require('./User')(sequelize)
 const Post = require('./Post')(sequelize)
 const Comment = require('./Comment')(sequelize)
+const Reaction = require('./Reaction')(sequelize)
 
 const db = {
     sequelize,
     ThemePost,
     User,
     Post,
-    Comment
+    Comment,
+    Reaction
 }
 
 module.exports = db

@@ -59,11 +59,11 @@
 			<n-text>{{ post.username }}</n-text>
 		</template>
 
-		<n-button @click.stop="like">
+		<n-button @click.stop="like({ postId: post.id, type: 'like'})">
 			<component :is="Heart" style="width: 40px; height: 40px; color: currentColor;"/>
 		</n-button>
 
-		<n-button @click.stop="dislike">
+		<n-button @click.stop="dislike({ postId: post.id, type: 'dislike'})">
 			<component :is="HeartDislike" style="width: 40px; height: 40px; color: currentColor;"/>
 		</n-button>
   			</n-card>
@@ -104,6 +104,7 @@
 	import { useThemeStore} from '../store/useThemeStore'
 	import { useRouter } from 'vue-router'
 	import { useDateStore } from '../store/useDateStore'
+    import { useReactionStore } from '../store/useReactionStore'
 
     const message = useMessage()
     const themePostStore = useThemePostStore()
@@ -111,6 +112,7 @@
     const postStore = usePostStore()
 	const themeStore = useThemeStore()
 	const dateStore = useDateStore()
+    const reactionStore = useReactionStore()
 	const router = useRouter()
 
     const themeOptions = ref([])
@@ -118,12 +120,14 @@
 	const collapsed = ref(false)
     const selectedKey = ref('0')
 
-	const like = async () => {
-
+	const like = async (data) => {
+        const success = await reactionStore.toggleReaction(data)
+        console.log(success)
 	}
 
-	const dislike = async () => {
-
+	const dislike = async (data) => {
+        const success = await reactionStore.toggleReaction(data)
+        console.log(success)
 	}
 
 	const toPost = (postId) => {
