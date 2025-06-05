@@ -42,6 +42,7 @@
 	  <n-button type="primary" @click="toUserPosts">Ваши посты</n-button>
 	  <n-card
 	  	v-for="post in postStore.posts"
+        :key="post.id"
     	:title="post.title"
     	size="medium"
     	hoverable
@@ -66,6 +67,12 @@
 		<n-button @click.stop="dislike({ postId: post.id, type: 'dislike'})">
 			<component :is="HeartDislike" style="width: 40px; height: 40px; color: currentColor;"/>
 		</n-button>
+
+        <n-text>
+            👍 {{ reactionStore.getReactions(post.id).likes }} |
+      👎 {{ reactionStore.getReactions(post.id).dislikes }} |
+            Вы поставили: {{ reactionStore.getReactions(post.id).userReaction || 'ничего' }}
+        </n-text>
   			</n-card>
 		</div>
 		</n-layout-content>
@@ -174,6 +181,8 @@
     onMounted(async () => {
         await fetchThemePosts()
 		await SortedPosts()
+        const postIds = postStore.posts.map(p => p.id)
+        reactionStore.fetchReactionsForPosts(postIds, userStore.user.id)
     })
 
 	watch(selectedKey, async () => {
