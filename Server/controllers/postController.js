@@ -1,14 +1,48 @@
 const postService = require('../services/postService')
 
+// const getPosts = async (req, res) => {
+//     try {
+//         const posts = await postService.getAllPosts(req.query.themePostId)
+//         res.status(200).json(posts)
+//     } catch (e) {
+//         console.error('Ошибка получения постов:', e)
+//         res.status(500).json({ error: 'Ошибка сервера' })
+//     }
+// }
+
+// const getPosts = async (req, res) => {
+//     try {
+//         const themePostId = req.query.themePostId
+//         const page = parseInt(req.query.page) || 1
+//         const limit = parseInt(req.query.limit) || 10
+
+//         const posts = await postService.getAllPosts(themePostId, page, limit)
+
+//         res.status(200).json(posts)
+//     } catch (e) {
+//         console.error('Ошибка получения постов:', e)
+//         res.status(500).json({ error: 'Ошибка сервера' })
+//     }
+// }
+
 const getPosts = async (req, res) => {
-    try {
-        const posts = await postService.getAllPosts(req.query.themePostId)
-        res.status(200).json(posts)
-    } catch (e) {
-        console.error('Ошибка получения постов:', e)
-        res.status(500).json({ error: 'Ошибка сервера' })
-    }
-}
+  try {
+    const themePostId = req.query.themePostId;
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+
+    const { total, posts } = await postService.getAllPosts(themePostId, page, limit);
+
+    // Отправляем массив постов и «сколько всего есть»
+    res.status(200).json({
+      posts,
+      total
+    });
+  } catch (e) {
+    console.error('Ошибка получения постов:', e);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+};
 
 const addPost = async (req, res) => {
     try {

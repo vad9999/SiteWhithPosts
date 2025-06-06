@@ -13,15 +13,46 @@ const { Post } = require('../models')
 //     }
 // }
 
-const getAllPosts = (themePostId) => {
-    const numericId = Number(themePostId)
+// const getAllPosts = (themePostId) => {
+//     const numericId = Number(themePostId)
 
-    if (!themePostId || numericId === 0) {
-        return Post.findAll()
-    } else {
-        return Post.findAll({ where: { themePostId: numericId } })
-    }
-}
+//     if (!themePostId || numericId === 0) {
+//         return Post.findAll()
+//     } else {
+//         return Post.findAll({ where: { themePostId: numericId } })
+//     }
+// }
+
+const getAllPosts = async (themePostId, page = 1, limit = 10) => {
+  const offset = (page - 1) * limit;
+  const numericId = Number(themePostId);
+
+  const where = (isNaN(numericId) || numericId === 0)
+    ? {}
+    : { themePostId: numericId };
+
+    console.log('==> getAllPosts:', {
+        themePostId,
+        page,
+        limit,
+        offset,
+        where
+    })
+
+
+  // findAndCountAll вернёт { count, rows }
+  const result = await Post.findAndCountAll({
+    where,
+    offset,
+    limit,
+    order: [['createdAt', 'DESC']]
+  });
+
+  return {
+    total: result.count,
+    posts: result.rows
+  };
+};
 
 const createPost = async (post) => {
     return await Post.create(post)
