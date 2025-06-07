@@ -3,6 +3,7 @@ import api from '../api/api'
 import Post from '../models/Post'
 import { useUserStore } from "./useUserStore";
 import { useThemePostStore } from "./useThemePostStore";
+import { useReactionStore } from "./useReactionStore";
 
 export const usePostStore = defineStore('post', {
     state: () => ({
@@ -24,9 +25,11 @@ export const usePostStore = defineStore('post', {
             this.page = 1;
             this.posts = [];
             this.total = 0;
-            this.loading = false;
+            this.loading = true;
             // Загружаем первую «страницу» постов:
             await this.loadMore();
+
+            this.loading = false;
         },
         async addPost(postData) {
             try {
@@ -136,6 +139,10 @@ export const usePostStore = defineStore('post', {
 
                 this.posts.push(...postsWithUsernames)
                 this.page += 1
+
+                const reactionStore = useReactionStore();
+                const postIds = this.posts.map(p => p.id);
+                await reactionStore.fetchReactionsForPosts(postIds, userStore.user.id);
             } catch (e) {
                 console.error('Ошибка получения постов:', e)
             } finally {
@@ -143,8 +150,11 @@ export const usePostStore = defineStore('post', {
             }
         }
     },
+    // 
+    
     getters: {
         filteredAndSortedPosts(state) {
+            const reactionStore = useReactionStore();
             let result = [...state.posts];
 
             // Поиск
@@ -159,12 +169,17 @@ export const usePostStore = defineStore('post', {
 
             // Сортировка
             result.sort((a, b) => {
-            let aVal = a[state.sortKey];
-            let bVal = b[state.sortKey];
+            let aVal, bVal;
 
             if (state.sortKey === 'date' || state.sortKey === 'createdAt') {
                 aVal = new Date(a.createdAt);
                 bVal = new Date(b.createdAt);
+            } else if (state.sortKey === 'likes' || state.sortKey === 'dislikes') {
+                aVal = reactionStore.getReactions(a.id)[state.sortKey];
+                bVal = reactionStore.getReactions(b.id)[state.sortKey];
+            } else {
+                aVal = a[state.sortKey];
+                bVal = b[state.sortKey];
             }
 
             if (typeof aVal === 'string') aVal = aVal.toLowerCase();

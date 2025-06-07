@@ -16,7 +16,13 @@ export const useReactionStore = defineStore('reaction', {
 				commentId,
 				type
 			});
-			return res.data.reaction;
+
+			const updated = res.data.reaction
+			if (postId) {
+				this.reactionsMap[postId] = updated
+			}
+
+			return updated
 		},
 		async fetchReactionsForPosts(postIds, userId) {
 			try {

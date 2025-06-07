@@ -34,7 +34,6 @@
 						<component :is="Settings" style="width: 40px; height: 40px; color: currentColor;"/>
 					</div>
 
-					<h2>Выбран пункт: {{ selectedKey }}</h2>
 					<n-button type="primary" @click="loadThemePost" style="right: 0; top: 0;">Добавить</n-button>
 					<n-button type="primary" @click="toUserPosts">Ваши посты</n-button>
 					<n-input v-model:value="postStore.searchQuery" placeholder="Поиск..." clearable/>
@@ -42,10 +41,12 @@
 					placeholder="Сортировка"
 					v-model:value="postStore.sortKey"
 					:options="[
-    				{ label: 'Дата', value: 'date' },
-    				{ label: 'Заголовок', value: 'title' },
-    				{ label: 'Автор', value: 'username' }
-  					]"
+						{ label: 'Дата', value: 'date' },
+						{ label: 'Заголовок', value: 'title' },
+						{ label: 'Автор', value: 'username' },
+						{ label: 'Лайки', value: 'likes' },
+						{ label: 'Дизлайки', value: 'dislikes' }
+					]"
 					/>
 					<n-select
 					v-model:value="postStore.sortDirection"
@@ -66,31 +67,40 @@
 						<template #header-extra>
 							<n-text depth="3">{{ dateStore.formatDate(post.createdAt) }}</n-text>
 						</template>
+
 						<n-text depth="2">
-						{{ post.body.length > 100 ? post.body.slice(0, 100) + '...' : post.body }}
+							{{ post.body.length > 100 ? post.body.slice(0, 100) + '...' : post.body }}
 						</n-text>
+
 						<template #footer>
 							<n-text>{{ post.username }}</n-text>
 						</template>
 
-						<n-button @click.stop="like({ postId: post.id, type: 'like'})">
-							<component :is="Heart" style="width: 40px; height: 40px; color: currentColor;"/>
-						</n-button>
+						<div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
 
-						<n-button @click.stop="dislike({ postId: post.id, type: 'dislike'})">
-							<component :is="HeartDislike" style="width: 40px; height: 40px; color: currentColor;"/>
-						</n-button>
+							<n-button text @click.stop="react(post.id, 'like')">
+							<component
+								:is="getLikeIcon(post.id)"
+								style="width: 28px; height: 28px;"
+								:style="{ color: getReactionColor(post.id, 'like') }"
+							/>
+							</n-button>
+							<n-text>{{ reactionStore.getReactions(post.id).likes }}</n-text>
 
-						<n-text>
-							👍 {{ reactionStore.getReactions(post.id).likes }} |
-					👎 		{{ reactionStore.getReactions(post.id).dislikes }} |
-							Вы поставили: {{ reactionStore.getReactions(post.id).userReaction || 'ничего' }}
-						</n-text>
-  					</n-card>
+							<n-button text @click.stop="react(post.id, 'dislike')">
+							<component
+								:is="getDislikeIcon(post.id)"
+								style="width: 28px; height: 28px;"
+								:style="{ color: getReactionColor(post.id, 'dislike') }"
+							/>
+							</n-button>
+							<n-text>{{ reactionStore.getReactions(post.id).dislikes }}</n-text>
+						</div>
+					</n-card>
             		<div style="background: red; height: 30px; width: 100%;" ref="observerTarget" class="observer" @click="console.log(postStore.posts)"></div>
-					<!-- <div v-if="postStore.loading" style="text-align: center; margin: 16px;">
-      					<n-spinner type="circle" />
-    				</div> -->
+					<div v-if="postStore.loading" style="text-align: center; margin: 16px;" size="large">
+      					<n-spin type="circle" />
+    				</div>
 				</div>
 			</n-layout-content>
   		</n-layout>
@@ -117,14 +127,146 @@
   	</div>
 </template>
 
+
+<!-- <template>
+  <div>
+    <n-layout has-sider style="height: 100vh;">
+      <n-layout-sider
+        bordered
+        width="200"
+        style="position: fixed; height: 100vh; left: 0; top: 0;"
+        :collapsed="collapsed"
+        show-trigger
+        @update:collapsed="collapsed = $event"
+      >
+        <n-menu :options="menuOptions" v-model:value="selectedKey" />
+      </n-layout-sider>
+
+      <n-layout-content
+        :style="{
+          marginLeft: collapsed ? '48px' : '200px',
+          padding: '0',
+          height: '100vh',
+          overflow: 'hidden',
+          boxSizing: 'border-box'
+        }"
+      >
+        <div style="height: 100%; overflow-y: auto; padding: 16px; box-sizing: border-box;">
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+            <div @click="themeStore.toggleTheme" style="cursor: pointer;">
+              <component :is="themeStore.theme === 'dark' ? Sunny : Moon" style="width: 28px; height: 28px;" />
+            </div>
+            <div @click="toSettings" style="cursor: pointer;">
+              <component :is="Settings" style="width: 28px; height: 28px;" />
+            </div>
+            <n-button type="primary" @click="loadThemePost">Добавить</n-button>
+            <n-button type="primary" @click="toUserPosts">Ваши посты</n-button>
+          </div>
+
+          <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+            <n-input v-model:value="postStore.searchQuery" placeholder="Поиск..." clearable style="flex: 1;" />
+            <n-select
+              v-model:value="postStore.sortKey"
+              placeholder="Сортировка"
+              :options="[
+                { label: 'Дата', value: 'date' },
+                { label: 'Заголовок', value: 'title' },
+                { label: 'Автор', value: 'username' },
+                { label: 'Лайки', value: 'likes' },
+                { label: 'Дизлайки', value: 'dislikes' }
+              ]"
+              style="width: 180px;"
+            />
+            <n-select
+              v-model:value="postStore.sortDirection"
+              :options="[
+                { label: 'По возрастанию', value: 'asc' },
+                { label: 'По убыванию', value: 'desc' }
+              ]"
+              style="width: 180px;"
+            />
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
+            <n-card
+              v-for="post in postStore.filteredAndSortedPosts"
+              :key="post.id"
+              hoverable
+              style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;"
+              @click="toPost(post.id)"
+            >
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <n-text strong style="font-size: 16px;">{{ post.title }}</n-text>
+                <n-text depth="3" style="font-size: 12px;">{{ dateStore.formatDate(post.createdAt) }}</n-text>
+              </div>
+
+              <n-text depth="2" style="margin: 8px 0;">
+                {{ post.body.length > 100 ? post.body.slice(0, 100) + '...' : post.body }}
+              </n-text>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                <n-text>{{ post.username }}</n-text>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <n-button text @click.stop="react(post.id, 'like')">
+                    <component
+                      :is="getLikeIcon(post.id)"
+                      style="width: 24px; height: 24px;"
+                      :style="{ color: getReactionColor(post.id, 'like') }"
+                    />
+                  </n-button>
+                  <n-text>{{ reactionStore.getReactions(post.id).likes }}</n-text>
+
+                  <n-button text @click.stop="react(post.id, 'dislike')">
+                    <component
+                      :is="getDislikeIcon(post.id)"
+                      style="width: 24px; height: 24px;"
+                      :style="{ color: getReactionColor(post.id, 'dislike') }"
+                    />
+                  </n-button>
+                  <n-text>{{ reactionStore.getReactions(post.id).dislikes }}</n-text>
+                </div>
+              </div>
+            </n-card>
+          </div>
+
+          <div style="background: red; height: 30px; width: 100%;" ref="observerTarget" class="observer" />
+
+          <div v-if="postStore.loading" style="text-align: center; margin: 16px;">
+            <n-spin type="circle" />
+          </div>
+        </div>
+      </n-layout-content>
+    </n-layout>
+
+    <n-modal v-model:show="showModal" title="Добавить пост" preset="dialog" :closable="false">
+      <n-form :model="formData" :rules="rules" ref="formRef">
+        <n-form-item label="Название" path="title">
+          <n-input v-model:value="formData.title" placeholder="Введите название" />
+        </n-form-item>
+        <n-form-item label="Описание" path="body">
+          <n-input v-model:value="formData.body" placeholder="Введите описание" type="textarea" />
+        </n-form-item>
+        <n-form-item label="Тема" path="themePostId">
+          <n-select v-if="themeOptions.length" v-model:value="formData.themePostId" :options="themeOptions" placeholder="Выберите тему" />
+        </n-form-item>
+        <n-flex style="justify-content: space-between;">
+          <n-button @click="showModal = false">Отмена</n-button>
+          <n-button type="primary" @click="submitForm">Сохранить</n-button>
+        </n-flex>
+      </n-form>
+    </n-modal>
+  </div>
+</template> -->
+
+
 <script setup>
     import { ref, onMounted, watch } from 'vue'
-    import { NButton, NModal, NText, NForm, NFormItem, NInput, NSelect, NFlex, useMessage, NLayout, NLayoutSider, NLayoutContent, NMenu, NCard } from 'naive-ui'
+    import { NButton, NModal, NText, NForm, NFormItem, NInput, NSelect, NFlex, useMessage, NLayout, NLayoutSider, NLayoutContent, NMenu, NCard, NSpin } from 'naive-ui'
     import { useThemePostStore } from '../store/useThemePostStore'
     import { useUserStore } from '../store/useUserStore'
     import { usePostStore } from '../store/usePostStore'
     import Post from '../models/Post'
-    import { Moon, Sunny, Settings, ThumbsUp, ThumbsDown, Heart, HeartDislike } from '@vicons/ionicons5'
+    import { Moon, Sunny, Settings, Heart, HeartDislike, HeartOutline, HeartDislikeOutline } from '@vicons/ionicons5'
 	import { useThemeStore} from '../store/useThemeStore'
 	import { useRouter } from 'vue-router'
 	import { useDateStore } from '../store/useDateStore'
@@ -149,14 +291,29 @@
 	const limit = 10
 	const hasMore = ref(true)
 
-	const like = async (data) => {
-        const success = await reactionStore.toggleReaction(data)
-        console.log(success)
+	const react = async (postId, type) => {
+		const res = await reactionStore.toggleReaction({ postId, type })
+		if (res) {
+			await reactionStore.fetchReactionsForPosts([postId], userStore.user.id)
+		}
 	}
 
-	const dislike = async (data) => {
-        const success = await reactionStore.toggleReaction(data)
-        console.log(success)
+	const getLikeIcon = (postId) => {
+		const reaction = reactionStore.getReactions(postId).userReaction
+		return reaction === 'like' ? Heart : HeartOutline
+	}
+
+	const getDislikeIcon = (postId) => {
+		const reaction = reactionStore.getReactions(postId).userReaction
+		return reaction === 'dislike' ? HeartDislike : HeartDislikeOutline
+	}
+
+	const getReactionColor = (postId, type) => {
+		const current = reactionStore.getReactions(postId).userReaction
+		if (current === type) {
+			return type === 'like' ? '#ff4d4f' : '#8c8c8c' // красный и серый
+		}
+		return '#aaa' // светло-серый для неактивного
 	}
 
 	const toPost = (postId) => {
@@ -214,7 +371,7 @@
     const menuOptions = ref([])
 
 	watch(selectedKey, async (newVal) => {
-		//await SortedPosts()
+		console.log('selectedKey changed:', newVal)
 		postStore.resetAndFetch(newVal)
 	})
 
@@ -222,17 +379,17 @@
 		await postStore.loadMore()
 	}
 
-	useIntersectionObserver(observerTarget, ([{ isIntersecting }]) => {
-		if (isIntersecting) {
-			loadMore()
-		}
-	}, {
-		threshold: 0.1
-	})
-
 	onMounted(async () => {
 		await fetchThemePosts()
-		postStore.resetAndFetch(selectedKey.value)
+		await postStore.resetAndFetch(selectedKey.value)
+
+		useIntersectionObserver(observerTarget, ([{ isIntersecting }]) => {
+			if (isIntersecting) {
+				loadMore()
+			}
+		}, {
+			threshold: 0.1
+		})
 	})
 
     const showModal = ref(false)
