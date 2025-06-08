@@ -11,7 +11,7 @@ export const usePostStore = defineStore('post', {
         userPosts: [],
         total: 0,        // общее число постов (для выбранной темы)
         page: 1,         // текущая страница
-        limit: 10,       // сколько постов загружать за раз
+        limit: 25,       // сколько постов загружать за раз
         loading: false,  // флаг «идёт загрузка»
         themePostId: 0,  // текущая выбранная тема (0 = «все»)
 
@@ -25,11 +25,8 @@ export const usePostStore = defineStore('post', {
             this.page = 1;
             this.posts = [];
             this.total = 0;
-            this.loading = true;
-            // Загружаем первую «страницу» постов:
-            await this.loadMore();
 
-            this.loading = false;
+            await this.loadMore();
         },
         async addPost(postData) {
             try {
