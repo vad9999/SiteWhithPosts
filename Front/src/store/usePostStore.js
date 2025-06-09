@@ -95,12 +95,18 @@ export const usePostStore = defineStore('post', {
                 return false
             }
         },
-        async fetchOnePost (postId) {
+        async fetchOnePost(postId) {
             const res = await api.get(`/posts/${postId}`)
-            return res.data
+            const userStore = useUserStore()
+
+            const p = res.data
+            const user = await userStore.fetchUserById(p.userId)
+
+            return {
+                ...Post.fromJson(p),
+                username: user.userName
+            }
         },
-
-
         async loadMore() {
             if (this.loading) return
             if (this.posts.length >= this.total && this.total !== 0) return

@@ -22,6 +22,10 @@ export const useReactionStore = defineStore('reaction', {
 				this.reactionsMap[postId] = updated
 			}
 
+			if(commentId) { 
+				this.reactionsMap[commentId] = updated
+			}
+
 			return updated
 		},
 		async fetchReactionsForPosts(postIds, userId) {
@@ -40,8 +44,24 @@ export const useReactionStore = defineStore('reaction', {
 				console.error('Ошибка при загрузке реакций на посты:', err)
 			}
 		},
-		getReactions(postId) {
-			return this.reactionsMap[postId] || { likes: 0, dislikes: 0, userReaction: null }
+		async fetchReactionsForComments(commentIds, userId) {
+			try {
+				const res = await api.post(`/reactions/comments`, {
+				commentIds,
+				userId
+				})
+
+				// res.data должен быть объект: { [postId]: { likes, dislikes, userReaction } }
+				this.reactionsMap = {
+				...this.reactionsMap,
+				...res.data
+				}
+			} catch (err) {
+				console.error('Ошибка при загрузке реакций на комментарии:', err)
+			}
+		},
+		getReactions(id) {
+			return this.reactionsMap[id] || { likes: 0, dislikes: 0, userReaction: null }
 		}
 	}
 });

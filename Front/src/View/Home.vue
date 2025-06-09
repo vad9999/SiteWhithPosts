@@ -25,20 +25,46 @@
 			}"
 			>
 				<div style="height: 100%; overflow-y: auto; padding: 16px; box-sizing: border-box;">
-					<div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-						<!-- <div @click="themeStore.toggleTheme" style="width: 40px; height: 40px;"> -->
-						<div @click="themeStore.toggleTheme" style="cursor: pointer;">
-							<component :is="themeStore.theme === 'dark' ? Sunny : Moon" 
-							style="width: 28px; height: 28px; color: currentColor;"/>
+					<div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; justify-content: space-between;">
+						<!-- Левая часть -->
+						<div style="display: flex; align-items: center; gap: 16px;">
+							<div @click="themeStore.toggleTheme" style="cursor: pointer;">
+								<component :is="themeStore.theme === 'dark' ? Sunny : Moon" 
+									style="width: 28px; height: 28px; color: currentColor;" />
+							</div>
+
+							<div @click="toSettings" style="cursor: pointer;">
+								<component :is="Settings" style="width: 28px; height: 28px; color: currentColor;" />
+							</div>
+
+							<n-button type="primary" @click="loadThemePost">Добавить</n-button>
+							<n-button type="primary" @click="toUserPosts">Ваши посты</n-button>
 						</div>
 
-						<div @click="toSettings" style="cursor: pointer;">
-							<component :is="Settings" style="width: 28px; height: 28px; color: currentColor;"/>
+						<!-- Правая часть -->
+						<div>
+							<n-button
+							@click="logOut"
+							style="
+								background-color: white;
+								color: #e3342f;
+								border: 1px solid #e3342f;
+								transition: all 0.3s;
+							"
+							@mouseover="e => {
+								e.currentTarget.style.backgroundColor = '#e3342f';
+								e.currentTarget.style.color = 'white';
+							}"
+							@mouseout="e => {
+								e.currentTarget.style.backgroundColor = 'white';
+								e.currentTarget.style.color = '#e3342f';
+							}"
+							>
+								Выйти
+							</n-button>
 						</div>
-						<!-- style="right: 0; top: 0;" -->
-						<n-button type="primary" @click="loadThemePost">Добавить</n-button>
-						<n-button type="primary" @click="toUserPosts">Ваши посты</n-button>
 					</div>
+
 					<div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
 						<n-input v-model:value="postStore.searchQuery" placeholder="Поиск..." clearable style="flex: 1;"/>
 						<n-select 
@@ -86,23 +112,23 @@
 							<div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
 								<n-text>{{ post.username }}</n-text>
 								<div style="display: flex; align-items: center; gap: 8px;">
-								<n-button text @click.stop="react(post.id, 'like')">
-									<component
-									:is="getLikeIcon(post.id)"
-									style="width: 24px; height: 24px;"
-									:style="{ color: getReactionColor(post.id, 'like') }"
-									/>
-								</n-button>
-								<n-text>{{ reactionStore.getReactions(post.id).likes }}</n-text>
+									<n-button text @click.stop="react(post.id, 'like')">
+										<component
+										:is="getLikeIcon(post.id)"
+										style="width: 24px; height: 24px;"
+										:style="{ color: getReactionColor(post.id, 'like') }"
+										/>
+									</n-button>
+									<n-text>{{ reactionStore.getReactions(post.id).likes }}</n-text>
 
-								<n-button text @click.stop="react(post.id, 'dislike')">
-									<component
-									:is="getDislikeIcon(post.id)"
-									style="width: 24px; height: 24px;"
-									:style="{ color: getReactionColor(post.id, 'dislike') }"
-									/>
-								</n-button>
-								<n-text>{{ reactionStore.getReactions(post.id).dislikes }}</n-text>
+									<n-button text @click.stop="react(post.id, 'dislike')">
+										<component
+										:is="getDislikeIcon(post.id)"
+										style="width: 24px; height: 24px;"
+										:style="{ color: getReactionColor(post.id, 'dislike') }"
+										/>
+									</n-button>
+									<n-text>{{ reactionStore.getReactions(post.id).dislikes }}</n-text>
 								</div>
 							</div>
 						</n-card>
@@ -201,6 +227,11 @@
 			return
 		}
 		router.push({ name: 'Post', params: { id: postId } })
+	}
+
+	const logOut = () => {
+		router.push('/')
+		userStore.user = null
 	}
 
     const toUserPosts = () => {

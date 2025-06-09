@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import api from '../api/api'
 import Comment from '../models/Comment'
+import { useUserStore } from './useUserStore'
+import { useReactionStore } from './useReactionStore'
 
 export const useCommentStore = defineStore('comment', {
     state: () => ({
@@ -9,7 +11,20 @@ export const useCommentStore = defineStore('comment', {
     actions: {
         async fetchPostComments(postId) {
             const res = await api.get(`/comments/post/${postId}`)
-            this.postComments = res.data.map(postComment => Comment.fromJson(postComment))
+            const userStore = useUserStore()
+            this.postComments = await Promise.all(
+                res.data.map(async (c) => {
+                    const user = await userStore.fetchUserById(c.userId)
+                    return {
+                    ...Comment.fromJson(c),
+                    username: user.userName
+                    }
+                })
+            ) 
+            
+            const reactionStore = useReactionStore();
+            const commentIds = this.postComments.map(c => c.id);
+            await reactionStore.fetchReactionsForComments(commentIds, userStore.user.id);
         },
         async addComment(commentData) {
             try {

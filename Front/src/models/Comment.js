@@ -1,5 +1,6 @@
 export default class Comment {
-  constructor({ body = '', postId = null, userId = null, createdAt = Date.now() } = {}) {
+  constructor({id = null, body = '', postId = null, userId = null, createdAt = Date.now() } = {}) {
+    this.id = id
     this.body = body
     this.postId = postId
     this.userId = userId,

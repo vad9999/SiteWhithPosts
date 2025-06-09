@@ -32,7 +32,24 @@ const getReactionsForPosts = async (req, res) => {
 	}
 }
 
+const getReactionsForComments = async (req, res) => {
+	try {
+		const { commentIds, userId } = req.body
+
+		if (!Array.isArray(commentIds) || typeof userId !== 'number') {
+			return res.status(400).json({ message: 'Неверные данные' });
+		}
+
+		const data = await reactionService.getReactionsForComments(commentIds, userId)
+		res.json(data)
+	} catch (err) {
+		console.error('Ошибка при получении реакций на посты:', err)
+		res.status(500).json({ message: 'Ошибка сервера' })
+	}
+}
+
 module.exports = {
   toggleReaction,
-  getReactionsForPosts
+  getReactionsForPosts,
+  getReactionsForComments
 };
